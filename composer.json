@@ -1,0 +1,10 @@
+{
+  "require": {
+    "phpunit/phpunit": "4.7.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "DBtrack\\": "src/"
+    }
+  }
+}
