@@ -1,6 +1,7 @@
 {
   "require": {
-    "phpunit/phpunit": "4.7.6"
+    "phpunit/phpunit": "4.7.6",
+    "pimple/pimple": "3.0.1"
   },
   "autoload": {
     "psr-4": {
