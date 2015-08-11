@@ -19,7 +19,8 @@ class CliParserTest extends \PHPUnit_Framework_TestCase
             'value2',
             'value3',
             '--quotes',
-            '"this is a very long parameter"'
+            '"this is a very long parameter"',
+            '--no-value'
         );
         list($command, $arguments) = $parser->parseCommandLine($args);
 
@@ -29,6 +30,7 @@ class CliParserTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('short-argument', $arguments);
         $this->assertArrayHasKey('multi', $arguments);
         $this->assertArrayHasKey('quotes', $arguments);
+        $this->assertArrayHasKey('no-value', $arguments);
 
         $this->assertEquals(
             'long-arg-value',
@@ -46,6 +48,7 @@ class CliParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value1', $arguments['multi'][0]);
         $this->assertEquals('value2', $arguments['multi'][1]);
         $this->assertEquals('value3', $arguments['multi'][2]);
+        $this->assertTrue(empty($arguments['no-value']));
     }
 
     public function testEmptyCommand()

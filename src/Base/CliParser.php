@@ -48,7 +48,9 @@ class CliParser
     protected function processArguments(array $arguments)
     {
         foreach ($arguments as $param => $values) {
-            if (1 == count($values)) {
+            if (0 == count($values)) {
+                $arguments[$param] = '';
+            } elseif (1 == count($values)) {
                 $arguments[$param] = $values[0];
             }
         }
