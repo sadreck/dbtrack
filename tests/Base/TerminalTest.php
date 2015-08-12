@@ -10,7 +10,9 @@ class TerminalTest extends \PHPUnit_Framework_TestCase
 
         $terminal = new Terminal($inputStream, $outputStream);
 
-        $terminal->prompt('Shall we play a game?');
+        $answer = $terminal->prompt('Shall we play a game?');
+        $this->assertEquals('test', $answer);
+
         fseek($outputStream, 0);
         $output = stream_get_contents($outputStream);
         $this->assertEquals('Shall we play a game?', $output);
@@ -64,4 +66,9 @@ class TerminalTest extends \PHPUnit_Framework_TestCase
             );
         }
     }
+}
+
+function fgets()
+{
+    return 'test';
 }
