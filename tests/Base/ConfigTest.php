@@ -5,7 +5,7 @@ use Mockery as Mock;
 
 function is_writable($filename)
 {
-    // Nothing.
+    return false;
 }
 
 function getcwd()
@@ -37,7 +37,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config();
         $this->assertEquals('/nothing/.dbtrack', $config->dbtDirectory);
 
-        self::$functions->shouldReceive('is_writable')->andReturn(false);
         try {
             $config = new Config($this->baseDir);
             $this->assertTrue(false);
