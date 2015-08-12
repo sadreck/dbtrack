@@ -4,7 +4,7 @@ namespace DBtrack\Base;
 class Config
 {
     /** @var string The directory where all config information is be stored. */
-    protected $dbtDirectory = '';
+    public $dbtDirectory = '';
 
     /**
      * @param string $userDirectory Override $dbtDirectory.
