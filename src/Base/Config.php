@@ -17,7 +17,7 @@ class Config
             : $userDirectory;
 
         // If the directory exists check if it's writable. If not, we don't care
-        // as we 'll try and create it later on.`
+        // as we 'll try and create it later on.
         if (is_dir($this->dbtDirectory) && !is_writable($this->dbtDirectory)) {
             throw new \Exception(
                 'Permission denied to read/write to: ' . $this->dbtDirectory
