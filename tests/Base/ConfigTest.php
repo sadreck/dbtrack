@@ -1,24 +1,11 @@
 <?php
 namespace DBtrack\Base;
 
-use Mockery as Mock;
-
-function is_writable($filename)
-{
-    return ConfigTest::$functions->is_writable($filename);
-}
-
-function getcwd()
-{
-    return ConfigTest::$functions->getcwd();
-}
+require_once(dirname(dirname(__FILE__)) . '/Helpers/BaseFunctions.php');
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
     protected $baseDir = '';
-
-    /** @var \Mockery\MockInterface */
-    static public $functions = null;
 
     public function testConstructor()
     {
@@ -32,14 +19,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         unlink($this->baseDir . '/config');
         unset($config);
 
-        self::$functions
+        BaseFunctions::$functions
             ->shouldReceive('getcwd')
             ->once()
             ->andReturn('/nothing');
         $config = new Config();
         $this->assertEquals('/nothing/.dbtrack', $config->dbtDirectory);
 
-        self::$functions
+        BaseFunctions::$functions
             ->shouldReceive('is_writable')
             ->once()
             ->andReturn(false);
@@ -53,7 +40,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        self::$functions = Mock::mock();
+        BaseFunctions::init();
         $this->baseDir = sys_get_temp_dir() . '/.dbtrack.tests';
         $this->deleteDirectory($this->baseDir);
     }
@@ -61,7 +48,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->deleteDirectory($this->baseDir);
-        Mock::close();
+        \Mockery::close();
     }
 
     protected function deleteDirectory($directory)

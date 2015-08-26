@@ -17,11 +17,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             'DBtrack\Base\Command',
             array(),
             array(),
-            'InitClass',
+            'DummyClass',
             false
         );
-        class_alias('InitClass', 'DBtrack\Commands\Init');
+        class_alias('DummyClass', 'DBtrack\Commands\Dummy');
         $mock->method('execute')->willReturn(true);
-        $manager->run('init', array());
+        $manager->run('dummy', array());
     }
 }
