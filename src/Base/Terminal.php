@@ -3,11 +3,11 @@ namespace DBtrack\Base;
 
 class Terminal
 {
-    /** @var null */
-    private $inputStream = null;
+    /** @var */
+    private $inputStream = STDIN;
 
-    /** @var null */
-    private $outputStream = null;
+    /** @var */
+    private $outputStream = STDOUT;
 
     /**
      * Define available foreground colours.

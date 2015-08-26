@@ -4,7 +4,7 @@ namespace DBtrack;
 use DBtrack\Base\CliParser;
 use DBtrack\Base\Manager;
 
-$manager = new Manager();
+$manager = new Manager(true);
 $cliParser = new CliParser();
 
 list($command, $arguments) = $cliParser->parseCommandLine($argv);

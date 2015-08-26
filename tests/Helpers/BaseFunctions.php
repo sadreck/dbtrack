@@ -18,7 +18,7 @@ class BaseFunctions
 
     public static function init()
     {
-        if (self::$functions == null) {
+        if (null == self::$functions) {
             self::$functions = \Mockery::mock();
         }
     }

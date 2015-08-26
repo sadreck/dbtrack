@@ -57,7 +57,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         if (is_dir($directory)) {
             $list = scandir($directory);
             foreach ($list as $item) {
-                if ($item == '.' || $item == '..') {
+                if ('.' == $item || '..' == $item) {
                     continue;
                 }
                 $path = $directory . '/' . $item;

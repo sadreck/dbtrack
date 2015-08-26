@@ -3,6 +3,9 @@ namespace DBtrack\Base;
 
 class Config
 {
+    /** DBtrack version */
+    const VERSION = '0.2';
+
     /** @var string The directory where all config information is be stored. */
     public $dbtDirectory = '';
 
@@ -32,5 +35,32 @@ class Config
     public function isInitialised()
     {
         return file_exists($this->dbtDirectory . '/config');
+    }
+
+    /**
+     * Save config.
+     * @param \stdClass $config
+     * @return bool
+     */
+    public function saveConfig(\stdClass $config)
+    {
+        $configFile = $this->dbtDirectory . '/config';
+
+        // Try to delete file if it exists.
+        if (file_exists($configFile)) {
+            @unlink($configFile);
+            if (file_exists($configFile)) {
+                return false;
+            }
+        }
+
+        // Save new config.
+        file_put_contents($configFile, json_encode($config));
+        if (!file_exists($configFile)) {
+            // Could not create config file.
+            return false;
+        }
+
+        return true;
     }
 }

@@ -54,4 +54,19 @@ abstract class Command
     {
         return $this->container[$containerName];
     }
+
+    /**
+     * Add a container class.
+     * @param $name
+     * @param $object
+     * @return bool
+     */
+    public function addContainer($name, $object)
+    {
+        if (isset($this->container[$name])) {
+            return false;
+        }
+
+        $this->container[$name] = $object;
+    }
 }

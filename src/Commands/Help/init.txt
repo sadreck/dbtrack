@@ -1,0 +1,1 @@
+    init        Initialise a directory with dbtrack.
