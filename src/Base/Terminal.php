@@ -111,4 +111,17 @@ class Terminal
 
         return $foreColour . $backColour . $text . "\033[0m";
     }
+
+    public function getProgressBar(
+        $maxValue = 100,
+        $updateFrequency = 0,
+        $progressCharacter = '='
+    ) {
+        return new ProgressBar(
+            $this,
+            $maxValue,
+            $updateFrequency,
+            $progressCharacter
+        );
+    }
 }
