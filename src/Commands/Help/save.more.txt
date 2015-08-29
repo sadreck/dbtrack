@@ -1,0 +1,23 @@
+NAME
+    save   -   Save current actions (commit).
+
+SYNOPSIS
+    dbt save [--message | -m] <message>
+
+DESCRIPTION
+    This command saves all actions that were tracked during the last session.
+
+OPTIONS
+    <no params>
+        If no arguments are passed all actions will be saved without any message.
+
+        EXAMPLE
+
+        dbt save
+
+    -m, --message
+        You can specify the commit message of your tracking session.
+
+        EXAMPLE
+
+        dbt save --message "Track registration data changes"

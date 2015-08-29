@@ -4,7 +4,7 @@ namespace DBtrack\Commands;
 use DBtrack\Base\Command;
 use DBtrack\Core\LogTables;
 
-class Start extends Command
+class Track extends Command
 {
     public function execute()
     {

@@ -1,8 +1,8 @@
 NAME
-    start   -   Start tracking data.
+    track   -   Start tracking data.
 
 SYNOPSIS
-    dbt start [--track | -t] <tables> [--ignore | -i] <tables>
+    dbt track [--track | -t] <tables> [--ignore | -i] <tables>
 
 DESCRIPTION
     This command prepares all the required tables and triggers for the database tracking.
@@ -13,14 +13,14 @@ OPTIONS
 
         EXAMPLE
 
-        dbt start
+        dbt track
 
     -t, --track
         If you need to track specific tables, use this parameter.
 
         EXAMPLE
 
-        dbt start --track table1 table2 table5* some_*_tables
+        dbt track --track table1 table2 table5* some_*_tables
 
         The command above will track table1, table2, all tables that begin with "table5" and all tables that begin with "some_" and end with "_tables".
 
@@ -29,6 +29,6 @@ OPTIONS
 
         EXAMPLE
 
-        dbt start --ignore table7 table5*
+        dbt track --ignore table7 table5*
 
         The command above will track ALL tables except table7 and all tables that begin with "table5"
