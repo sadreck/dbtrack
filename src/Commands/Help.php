@@ -10,6 +10,8 @@ class Help extends Command
 {
     public function execute()
     {
+        $helpPath = $this->getHelpPath();
+
         /** @var $terminal Terminal */
         $terminal = Container::getClassInstance('terminal');
         $terminal->display(
@@ -17,32 +19,52 @@ class Help extends Command
         );
         $terminal->display('');
 
-        $helpPath = $this->getHelpPath();
+        $commands = $this->getCommandsToDisplay(
+            $helpPath,
+            $this->arguments['raw-command']
+        );
+        if (0 == count($commands)) {
+            $commands = $this->getCommandsToDisplay($helpPath, array());
+        }
 
-        $commands = $this->getCommands($helpPath);
         foreach ($commands as $command) {
             $help = $this->getCommandText($command, $helpPath);
             $terminal->display($help);
         }
 
         $terminal->display('');
-        $terminal->display('For more options type: dbt <command> more');
+        $terminal->display('For more options type: dbt help <command>');
     }
 
     /**
-     * Get all commands that have help files.
-     * @param $path
+     * Get a list of the files that we need to display.
+     * @param $helpPath
+     * @param array $arguments
      * @return array
      */
-    protected function getCommands($path)
+    protected function getCommandsToDisplay($helpPath, array $arguments)
     {
+        $files = glob($helpPath . '/*.txt');
         $commands = array();
-        $files = glob($path . '/*.txt');
+
+        $commandFile = '';
+        if (3 == count($arguments)) {
+            $commandFile = $arguments[2] . '.more';
+        } elseif (3 < count($arguments)) {
+            $commandFile = implode('.', array_splice($arguments, 2));
+        }
+
         foreach ($files as $file) {
             $info = pathinfo($file);
-            $commands[] = $info['filename'];
+            if (empty($commandFile)
+                && false === strpos($info['filename'], '.')) {
+
+                $commands[] = $info['filename'];
+            } elseif ($commandFile == $info['filename']) {
+                $commands[] = $info['filename'];
+            }
         }
-        sort($commands);
+
         return $commands;
     }
 

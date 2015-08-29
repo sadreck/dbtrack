@@ -1,0 +1,9 @@
+NAME
+    init   -   Initialise directory for dbtrack.
+
+SYNOPSIS
+    dbt start
+
+DESCRIPTION
+    This command will prompt you to enter the credentials for the database you with to track.
+    All configuration options (DBMS, hostname, database, username and password) will be stored inside ./.dbtrack/config

@@ -11,7 +11,9 @@ class CliParser
     public function parseCommandLine(array $arguments)
     {
         $command = '';
-        $parsed = array();
+        $parsed = array(
+            'raw-command' => $arguments
+        );
         if (count($arguments) <= 1) {
             return array($command, $parsed);
         }
