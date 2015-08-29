@@ -3,6 +3,7 @@ namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
 use DBtrack\Base\Config;
+use DBtrack\Base\Container;
 use DBtrack\Base\Terminal;
 
 class Help extends Command
@@ -10,7 +11,7 @@ class Help extends Command
     public function execute()
     {
         /** @var $terminal Terminal */
-        $terminal = $this->getClassInstance('terminal');
+        $terminal = Container::getClassInstance('terminal');
         $terminal->display(
             'dbtrack v' . Config::VERSION . "\tPavel Tsakalidis [ p@vel.gr ]"
         );

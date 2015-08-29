@@ -3,31 +3,16 @@ namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
 use DBtrack\Base\Config;
+use DBtrack\Base\Container;
 use DBtrack\Base\DBManager;
-use DBtrack\Base\Events;
 use DBtrack\Base\Terminal;
 
 class Init extends Command
 {
-    /** @var Terminal */
-    protected $terminal = null;
-
-    /** @var DBManager */
-    protected $dbManager = null;
-
     public function execute()
     {
-        /** @var $config Config */
-        $config = $this->getClassInstance('config');
-        if (false === $config) {
-            return false;
-        }
-
-        $this->terminal = $this->getClassInstance('terminal');
-        $this->dbManager = $this->getClassInstance('dbmanager');
-
         // Check if it's already been initialised.
-        if ($config->isInitialised()) {
+        if ($this->config->isInitialised()) {
             if (!$this->confirmReInitialise()) {
                 return false;
             }
@@ -38,21 +23,16 @@ class Init extends Command
             return false;
         }
 
-        $dbms = $this->getDatabaseObject($data);
+        $dbms = $this->connectToDatabase($data);
         if (false === $dbms) {
-            Events::triggerSimple(
-                'eventDisplayMessage',
+            $this->terminal->display(
                 'Could not connect to database. Try running <dbt init> again.'
             );
             return false;
         }
 
-        // Add the database connection to the class container.
-        $this->addContainer('dbms', $dbms);
-
-        if (!$config->saveConfig($data)) {
-            Events::triggerSimple(
-                'eventDisplayMessage',
+        if (!$this->config->saveConfig($data)) {
+            $this->terminal->display(
                 'Could not save config (could be permissions error).'
             );
             return false;
@@ -60,22 +40,6 @@ class Init extends Command
 
         $this->terminal->display('dbtrack has been initialised.');
         return true;
-    }
-
-    /**
-     * Get $dbms object.
-     * @param \stdClass $data
-     * @return bool|\DBtrack\Base\Database
-     */
-    protected function getDatabaseObject(\stdClass $data)
-    {
-        return $this->dbManager->connect(
-            $data->datatype,
-            $data->hostname,
-            $data->database,
-            $data->username,
-            $data->password
-        );
     }
 
     /**
@@ -101,10 +65,7 @@ class Init extends Command
     {
         $databases = $this->dbManager->getSupportedDatabases();
         if (0 == count($databases)) {
-            Events::triggerSimple(
-                'eventDisplayMessage',
-                'No supported databases found.'
-            );
+            $this->terminal->display('No supported databases found.');
             return false;
         }
 
@@ -121,10 +82,7 @@ class Init extends Command
             empty($username) ||
             empty($password)) {
 
-            Events::triggerSimple(
-                'eventDisplayMessage',
-                'You must enter all credentials.'
-            );
+            $this->terminal->display('You must enter all credentials.');
             return false;
         }
 

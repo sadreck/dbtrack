@@ -34,7 +34,7 @@ class Config
      */
     public function isInitialised()
     {
-        return file_exists($this->dbtDirectory . '/config');
+        return file_exists($this->getConfigFile());
     }
 
     /**
@@ -44,7 +44,7 @@ class Config
      */
     public function saveConfig(\stdClass $config)
     {
-        $configFile = $this->dbtDirectory . '/config';
+        $configFile = $this->getConfigFile();
 
         // Try to delete file if it exists.
         if (file_exists($configFile)) {
@@ -62,5 +62,98 @@ class Config
         }
 
         return true;
+    }
+
+    /**
+     * Load config file.
+     * @return bool|mixed
+     */
+    public function loadConfig()
+    {
+        if (!$this->isInitialised()) {
+            return false;
+        }
+
+        $data = file_get_contents($this->getConfigFile());
+        if (empty($data)) {
+            return false;
+        }
+
+        $config = json_decode($data);
+        if (false === $config) {
+            return false;
+        } elseif (!$this->validateConfig($config)) {
+            return false;
+        }
+
+        return $config;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getConfigFile()
+    {
+        return $this->dbtDirectory . '/config';
+    }
+
+    /**
+     * @param \stdClass $config
+     * @return bool
+     */
+    protected function validateConfig(\stdClass $config)
+    {
+        return isset(
+            $config->datatype,
+            $config->hostname,
+            $config->database,
+            $config->username,
+            $config->password
+        );
+    }
+
+    /**
+     * Set the running state of dbtrack.
+     * @param $isRunning
+     * @throws \Exception
+     */
+    public function setRunning($isRunning)
+    {
+        /** @var $dbms Database */
+        $dbms = Container::getClassInstance('dbms');
+
+        $running = $isRunning ? 1 : 0;
+
+        $sqlQueries = array(
+            "DELETE FROM dbtrack_config
+              WHERE name IN ('running', 'runtime')",
+
+            "INSERT INTO dbtrack_config (name, value)
+              VALUES('running', {$running})",
+
+            "INSERT INTO dbtrack_config (name, value)
+              VALUES('runtime', ". time() .")"
+        );
+
+        foreach ($sqlQueries as $sql) {
+            $dbms->executeQuery($sql);
+        }
+    }
+
+    /**
+     * Check if dbtrack is already running.
+     * @return bool
+     * @throws \Exception
+     */
+    public function isRunning()
+    {
+        /** @var $dbms Database */
+        $dbms = Container::getClassInstance('dbms');
+
+        $sql = "SELECT *
+                FROM dbtrack_config
+                WHERE name = 'running' AND value = 1";
+        $row = $dbms->getRow($sql);
+        return (false !== $row);
     }
 }
