@@ -1,0 +1,94 @@
+NAME
+    show   -   Show tracking results.
+
+SYNOPSIS
+    dbt show <group-id> [--maxlength | -m] <length> [--actions | -a] <actions> [--ignore-actions | -ia] <actions>
+             [--tables | -t] <tables> [--ignore-tables | -it] <tables>
+             [--per-page | -p] <number>
+
+DESCRIPTION
+    This command will display the tracked results on screen.
+
+OPTIONS
+    <no params>
+        If no arguments are passed a list with all the tracked sessions will be displayed.
+        From this list you can use the first column (ID) to display all the tracked information
+        for the specified session.
+
+        EXAMPLE
+
+        dbt show
+
+    <group-id>
+        Specify the group id for which you wish to see all tracked information.
+        This is the first column of the <dbt show> results.
+
+        EXAMPLE
+
+        dbt show 117
+
+    -m, --maxlength <length>
+        By default only 20 first characters of a column's value are displayed.
+        If you want to show the whole value set this to zero (0).
+
+        EXAMPLE
+
+        dbt show 117 --maxlength 100
+
+        This will set the maximum value's length to 100.
+
+        dbt show 117 --maxlength 0
+
+        This will remove the length restriction and will display the whole value.
+
+    -a, --actions <actions>
+        Display only specific actions (e.g. only inserts) using this parameter.
+        Actions are: INSERT, UPDATE, DELETE.
+
+        EXAMPLE
+
+        dbt show 117 --actions insert update
+
+        This will display only inserts and updates.
+
+    -ia, --ignore-actions <actions>
+        Ignore specific actions (e.g. deletes) using this paramster.
+        Actions are: INSERT, UPDATE, DELETE.
+
+        EXAMPLE
+
+        dbt show 117 --ignore-action insert
+
+        This will display update/delete actions but not inserts.
+
+    -t, --tables <tables>
+        Display changes only from specific tables.
+
+        EXAMPLE
+
+        dbt show --tables table1 table2 conf*
+
+        This will display all tracked changes from tables table1, table2 and all tables that begin with "conf".
+
+    -it, --ignore-tables <tables>
+        Ignore changes from specific tables.
+
+        EXAMPLE
+
+        dbt show --ignore-tables table1 conf*
+
+        This will ignore all tracked changes from tables table1 and all tables that begin with "conf".
+
+    -p, --per-page <number>
+        By default the result pagination is set to 10 tracked changes per page.
+        If you want to show all results in one go set this to zero.
+
+        EXAMPLE
+
+        dbt show --per-page 20
+
+        This will set the pagination to 20 results per page.
+
+        dbt show --per-page 0
+
+        This will remove the pagination limit.

@@ -201,4 +201,16 @@ abstract class Database
         }
         $statement->execute();
     }
+
+    /**
+     * Get description for the passed action type.
+     * @param $actionType
+     * @return string
+     */
+    public function getActionDescription($actionType)
+    {
+        return isset($this->actionDescriptions[$actionType])
+            ? $this->actionDescriptions[$actionType]
+            : '';
+    }
 }

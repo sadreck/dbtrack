@@ -3,6 +3,7 @@ namespace DBtrack\Core;
 
 use DBtrack\Base\Container;
 use DBtrack\Base\Database;
+use DBtrack\Base\Events;
 
 class Actions
 {
@@ -32,8 +33,39 @@ class Actions
         return $this->dbms->getRows($sql);
     }
 
-    public function getActionsList()
+    /**
+     * Check if the group id passed exists in the tracking table.
+     * @param $groupId
+     * @return bool
+     */
+    public function groupExists($groupId)
     {
-        return array();
+        $sql = "SELECT COUNT(id) AS c
+                FROM dbtrack_actions
+                WHERE groupid = :groupid";
+        $result = $this->dbms->getRow($sql, array('groupid' => $groupId));
+        return (!empty($result) && (0 < (int)$result->c));
+    }
+
+    /**
+     * Return all parsed actions for the specified group id.
+     * @param $grouId
+     * @return array
+     */
+    public function getActionsList($grouId)
+    {
+        if (!$this->groupExists($grouId)) {
+            Events::triggerSimple(
+                'eventDisplayMessage',
+                'Group ID does not exist: ' . $grouId
+            );
+        }
+
+        $actionParser = new ActionParser();
+
+        $parsedActions = $actionParser->parseGroup($grouId);
+        $fullParsedActions = $actionParser->getFullRows($parsedActions);
+
+        return $fullParsedActions;
     }
 }

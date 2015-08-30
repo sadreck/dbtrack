@@ -2,6 +2,8 @@
 namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
+use DBtrack\Base\Database;
+use DBtrack\Core\ActionFormatting;
 use DBtrack\Core\Actions;
 
 class Show extends Command
@@ -14,6 +16,7 @@ class Show extends Command
         }
 
         $actionsManager = new Actions();
+        $actionFormatting = new ActionFormatting();
 
         $groupId = $this->getGroupID($this->arguments);
         if (false === $groupId) {
@@ -24,11 +27,13 @@ class Show extends Command
             }
             $this->showCommitList($commits);
         } else {
-            $actionList = $actionsManager->getActionsList();
+            $actionList = $actionsManager->getActionsList($groupId);
             if (empty($actionList)) {
                 $this->climate->out('No actions found.');
                 return true;
             }
+            $formattedList = $actionFormatting->formatList($actionList);
+            $this->showTrackedData($formattedList);
         }
     }
 
@@ -64,5 +69,17 @@ class Show extends Command
         }
 
         $this->climate->table($data);
+    }
+
+    /**
+     * Display tracked data.
+     * @param array $actions
+     */
+    protected function showTrackedData(array $actions)
+    {
+        foreach ($actions as $action) {
+            $this->climate->table(array($action));
+            $this->climate->out('');
+        }
     }
 }
