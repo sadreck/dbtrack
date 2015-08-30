@@ -1,0 +1,16 @@
+NAME
+    cleanup   -   Remove dbtrack from your database.
+
+SYNOPSIS
+    dbt cleanup [--yes | -y]
+
+DESCRIPTION
+    This command will remove all dbtrack tables and triggers from your database.
+
+OPTIONS
+    -y, --yes
+        If you want to skip the confirmation prompt, use this parameter.
+
+        EXAMPLE
+
+        dbt cleanup --yes

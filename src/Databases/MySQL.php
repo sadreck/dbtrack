@@ -240,6 +240,11 @@ class MySQL extends Database
 
     public function deleteTrigger($trigger)
     {
-        $this->connection->query("DROP TRIGGER {$trigger}");
+        $this->connection->query("DROP TRIGGER IF EXISTS {$trigger}");
+    }
+
+    public function deleteTable($table)
+    {
+        $this->connection->query("DROP TABLE IF EXISTS {$table}");
     }
 }

@@ -70,10 +70,17 @@ abstract class Database
 
     /**
      * Delete given trigger.
-     * @param $name
+     * @param $trigger
      * @return mixed
      */
     abstract public function deleteTrigger($trigger);
+
+    /**
+     * Delete given table.
+     * @param $table
+     * @return mixed
+     */
+    abstract public function deleteTable($table);
 
     /**
      * Initialise database handler.

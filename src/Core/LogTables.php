@@ -157,4 +157,16 @@ class LogTables
             $sqlScript
         );
     }
+
+    /**
+     * Delete tracking tables.
+     * @return bool
+     */
+    public function deleteTrackTables()
+    {
+        foreach ($this->dbtrackTables as $table) {
+            $this->dbms->deleteTable($table);
+        }
+        return true;
+    }
 }
