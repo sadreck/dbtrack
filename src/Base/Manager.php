@@ -1,6 +1,8 @@
 <?php
 namespace DBtrack\Base;
 
+use League\CLImate\CLImate;
+
 class Manager
 {
     /**
@@ -56,13 +58,13 @@ class Manager
      */
     protected function addGlobalEventListeners()
     {
-        $terminal = new Terminal();
+        $climate = new CLImate();
 
         $listeners = array(
             /* Display a message to the terminal (to avoid exceptions). */
             (object)array(
                 'event' => 'eventDisplayMessage',
-                'function' => array($terminal, 'display')
+                'function' => array($climate, 'out')
             )
         );
 

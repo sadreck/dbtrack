@@ -9,30 +9,30 @@ class Save extends Command
     public function execute()
     {
         if (!$this->prepareCommand()) {
-            $this->terminal->display('Could not start dbtrack.');
+            $this->climate->out('Could not start dbtrack.');
             return false;
         }
 
         if (!$this->config->isRunning()) {
-            $this->terminal->display('dbtrack is not running.');
+            $this->climate->out('dbtrack is not running.');
             return false;
         }
 
         if (!$this->dbManager->deleteTriggers()) {
-            $this->terminal->display('Could not remove all dbtrack triggers');
+            $this->climate->out('Could not remove all dbtrack triggers');
             return false;
         }
 
         $commit = new Commit();
         $actions = $commit->save($this->getMessage());
         if (false === $actions) {
-            $this->terminal->display('Could not commit actions.');
+            $this->climate->out('Could not commit actions.');
             return false;
         }
 
         $this->config->setRunning(false);
 
-        $this->terminal->display(
+        $this->climate->out(
             'Tracking stopped. '. $actions .' action(s) tracked.'
         );
         return true;

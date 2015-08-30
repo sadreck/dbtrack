@@ -4,7 +4,7 @@ namespace DBtrack\Commands;
 use DBtrack\Base\Command;
 use DBtrack\Base\Config;
 use DBtrack\Base\Container;
-use DBtrack\Base\Terminal;
+use League\CLImate\CLImate;
 
 class Help extends Command
 {
@@ -12,12 +12,12 @@ class Help extends Command
     {
         $helpPath = $this->getHelpPath();
 
-        /** @var $terminal Terminal */
-        $terminal = Container::getClassInstance('terminal');
-        $terminal->display(
+        /** @var $climate CLImate */
+        $climate = Container::getClassInstance('climate');
+        $climate->out(
             'dbtrack v' . Config::VERSION . "\tPavel Tsakalidis [ p@vel.gr ]"
         );
-        $terminal->display('');
+        $climate->out('');
 
         $commands = $this->getCommandsToDisplay(
             $helpPath,
@@ -29,11 +29,11 @@ class Help extends Command
 
         foreach ($commands as $command) {
             $help = $this->getCommandText($command, $helpPath);
-            $terminal->display($help);
+            $climate->out($help);
         }
 
-        $terminal->display('');
-        $terminal->display('For more options type: dbt help <command>');
+        $climate->out('');
+        $climate->out('For more options type: dbt help <command>');
     }
 
     /**

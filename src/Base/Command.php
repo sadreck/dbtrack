@@ -1,6 +1,8 @@
 <?php
 namespace DBtrack\Base;
 
+use League\CLImate\CLImate;
+
 abstract class Command
 {
     /** @var array */
@@ -9,8 +11,8 @@ abstract class Command
     /** @var Config */
     protected $config = null;
 
-    /** @var Terminal */
-    protected $terminal = null;
+    /** @var CLImate */
+    protected $climate = null;
 
     /** @var DBManager */
     protected $dbManager = null;
@@ -31,7 +33,7 @@ abstract class Command
         $this->arguments = $arguments;
         Container::initContainer();
 
-        $this->terminal = Container::getClassInstance('terminal');
+        $this->climate = Container::getClassInstance('climate');
         $this->dbManager = Container::getClassInstance('dbmanager');
         $this->config = Container::getClassInstance('config');
     }
@@ -68,7 +70,7 @@ abstract class Command
     {
         // Check if <dbt init> has been ran.
         if (!$this->config->isInitialised()) {
-            $this->terminal->display(
+            $this->climate->out(
                 'dbtrack has not been initialised. Run <dbt init> first.'
             );
             return false;
@@ -77,7 +79,7 @@ abstract class Command
         // Try to load config.
         $config = $this->config->loadConfig();
         if (false === $config) {
-            $this->terminal->display(
+            $this->climate->out(
                 'Could not load config. Please run <dbt init> again.'
             );
             return false;
@@ -86,7 +88,7 @@ abstract class Command
         // Connect to the database.
         $dbms = $this->connectToDatabase($config);
         if (false === $dbms) {
-            $this->terminal->display(
+            $this->climate->out(
                 'Could not connect to database. Try running <dbt init> again.'
             );
             return false;

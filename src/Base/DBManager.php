@@ -1,6 +1,8 @@
 <?php
 namespace DBtrack\Base;
 
+use League\CLImate\CLImate;
+
 class DBManager
 {
     /** @var Database */
@@ -78,16 +80,16 @@ class DBManager
 
     public function createTriggers(array $tables)
     {
-        /** @var $terminal Terminal */
-        $terminal = Container::getClassInstance('terminal');
-        $progressBar = $terminal->getProgressBar(count($tables));
+        /** @var $climate CLImate */
+        $climate = Container::getClassInstance('climate');
+        $progressBar = $climate->progress(count($tables));
 
         $i = 0;
         foreach ($tables as $table) {
             if (!$this->dbms->createTrackingTrigger($table)) {
                 return false;
             }
-            $progressBar->update(++$i);
+            $progressBar->current(++$i);
         }
         return true;
     }
@@ -102,14 +104,14 @@ class DBManager
             }
         );
 
-        /** @var $terminal Terminal */
-        $terminal = Container::getClassInstance('terminal');
-        $progressBar = $terminal->getProgressBar(count($dbtrackTriggers));
+        /** @var $climate CLImate */
+        $climate = Container::getClassInstance('climate');
+        $progressBar = $climate->progress(count($dbtrackTriggers));
 
         $i = 0;
         foreach ($dbtrackTriggers as $trigger) {
             $this->dbms->deleteTrigger($trigger);
-            $progressBar->update(++$i);
+            $progressBar->current(++$i);
         }
 
         return true;

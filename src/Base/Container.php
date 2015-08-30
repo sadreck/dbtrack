@@ -1,6 +1,8 @@
 <?php
 namespace DBtrack\Base;
 
+use League\CLImate\CLImate;
+
 class Container
 {
     /** @var \Pimple\Container */
@@ -17,8 +19,8 @@ class Container
             return new Config();
         };
 
-        self::$container['terminal'] = function ($c) {
-            return new Terminal();
+        self::$container['climate'] = function ($c) {
+            return new CLImate();
         };
 
         self::$container['dbmanager'] = function ($c) {

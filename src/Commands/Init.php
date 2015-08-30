@@ -2,10 +2,6 @@
 namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
-use DBtrack\Base\Config;
-use DBtrack\Base\Container;
-use DBtrack\Base\DBManager;
-use DBtrack\Base\Terminal;
 
 class Init extends Command
 {
@@ -27,20 +23,20 @@ class Init extends Command
 
         $dbms = $this->connectToDatabase($data);
         if (false === $dbms) {
-            $this->terminal->display(
+            $this->climate->out(
                 'Could not connect to database. Try running <dbt init> again.'
             );
             return false;
         }
 
         if (!$this->config->saveConfig($data)) {
-            $this->terminal->display(
+            $this->climate->out(
                 'Could not save config (could be permissions error).'
             );
             return false;
         }
 
-        $this->terminal->display('dbtrack has been initialised.');
+        $this->climate->out('dbtrack has been initialised.');
         return true;
     }
 
@@ -50,11 +46,13 @@ class Init extends Command
      */
     protected function confirmReInitialise()
     {
-        $this->terminal->display(
+        $input = $this->climate->input(
             'This directory has already been initialised.' .
             ' Are you sure you want to re-initialise?'
         );
-        $answer = $this->terminal->prompt('Y/N: ');
+        $input->accept(array('Y', 'N'), true);
+
+        $answer = $input->prompt();
         return ('y' == trim(strtolower($answer)));
     }
 
@@ -67,7 +65,7 @@ class Init extends Command
     {
         $databases = $this->dbManager->getSupportedDatabases();
         if (0 == count($databases)) {
-            $this->terminal->display('No supported databases found.');
+            $this->climate->out('No supported databases found.');
             return false;
         }
         $list = implode('/', $databases);
@@ -76,19 +74,19 @@ class Init extends Command
 
         $datatype = isset($presets['datatype'])
             ? $presets['datatype']
-            : $this->terminal->prompt('DBMS ('. $list .'): ');
+            : $this->climate->input('DBMS:')->accept($databases, true)->prompt();
         $hostname = isset($presets['hostname'])
             ? $presets['hostname']
-            : $this->terminal->prompt('Database hostname: ');
+            : $this->climate->input('Database hostname:')->prompt();
         $database = isset($presets['database'])
             ? $presets['database']
-            : $this->terminal->prompt('Database name: ');
+            : $this->climate->input('Database name:')->prompt();
         $username = isset($presets['username'])
             ? $presets['username']
-            : $this->terminal->prompt('Database username: ');
+            : $this->climate->input('Database username:')->prompt();
         $password = isset($presets['password'])
             ? $presets['password']
-            : $this->terminal->prompt('Database password: ');
+            : $this->climate->password('Database password:')->prompt();
 
         if (empty($datatype) ||
             empty($hostname) ||
@@ -96,7 +94,7 @@ class Init extends Command
             empty($username) ||
             empty($password)) {
 
-            $this->terminal->display('You must enter all credentials.');
+            $this->climate->out('You must enter all credentials.');
             return false;
         }
 

@@ -9,18 +9,18 @@ class Cleanup extends Command
     public function execute()
     {
         if (!$this->prepareCommand()) {
-            $this->terminal->display('Could not start dbtrack.');
+            $this->climate->out('Could not start dbtrack.');
             return false;
         }
 
         if ($this->config->isRunning()) {
-            $this->terminal->display('dbtrack is still running.');
+            $this->climate->out('dbtrack is still running.');
             return false;
         }
 
         if (!$this->isConfirmed($this->arguments)) {
             // Prompt user for confirmation.
-            $answer = $this->terminal->prompt(
+            $answer = $this->climate->out(
                 'Are you sure you want to drop all tracking tables? (Y/N): '
             );
             if ('y' != strtolower($answer)) {
@@ -29,24 +29,24 @@ class Cleanup extends Command
         }
 
         if (!$this->dbManager->deleteTriggers()) {
-            $this->terminal->display('Could not delete orphan triggers.');
+            $this->climate->out('Could not delete orphan triggers.');
             return false;
         }
 
         $dbTrackTables = new LogTables();
         if (!$dbTrackTables->deleteTrackTables()) {
-            $this->terminal->display('Could not delete tracking tables.');
+            $this->climate->out('Could not delete tracking tables.');
             return false;
         }
 
         if ($this->removeConfig($this->arguments)) {
             if (!$this->config->deleteConfigDirectory()) {
-                $this->terminal->display('Could not delete config directory.');
+                $this->climate->out('Could not delete config directory.');
                 return false;
             }
         }
 
-        $this->terminal->display('dbtrack has been removed.');
+        $this->climate->out('dbtrack has been removed.');
         return true;
     }
 

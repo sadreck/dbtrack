@@ -106,7 +106,7 @@ class LogTables
     {
         foreach ($this->dbtrackTables as $table) {
             if (!$this->dbms->tableExists($table)) {
-                $sqlScript = $this->dbms->loadSQLFile($table);
+                $sqlScript = $this->loadSQLFile($table);
                 if (false === $sqlScript) {
                     // Exception cause it's a coding error.
                     throw new \Exception('Could not load file: ' . $table);

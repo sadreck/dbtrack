@@ -9,32 +9,32 @@ class Track extends Command
     public function execute()
     {
         if (!$this->prepareCommand()) {
-            $this->terminal->display('Could not start dbtrack.');
+            $this->climate->out('Could not start dbtrack.');
             return false;
         }
 
         if ($this->config->isRunning()) {
-            $this->terminal->display('dbtrack is already running.');
+            $this->climate->out('dbtrack is already running.');
             return false;
         }
 
         $tables = $this->getTablesToTrack($this->arguments);
         if (0 == count($tables)) {
-            $this->terminal->display('No tables to track.');
+            $this->climate->out('No tables to track.');
             return false;
         }
 
         // TODO - Implement Chain - check.
         $dbTrackTables = new LogTables();
         if (!$dbTrackTables->prepare()) {
-            $this->terminal->display('Could not prepare dbtrack tables.');
+            $this->climate->out('Could not prepare dbtrack tables.');
             return false;
         }
 
         // Create triggers.
         if (!$this->dbManager->createTriggers($tables)) {
             // Clean up triggers.
-            $this->terminal->display('Could not create triggers.');
+            $this->climate->out('Could not create triggers.');
             return false;
         }
 
