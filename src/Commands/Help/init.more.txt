@@ -2,8 +2,78 @@ NAME
     init   -   Initialise directory for dbtrack.
 
 SYNOPSIS
-    dbt start
+    dbt init [--datatype | -dt] <database type>
+             [--database | -db] <database name>
+             [--hostname | -h] <hostname>
+             [--username | -u] <username>
+             [--password | -p] <password>
+             [--overwrite | -o]
 
 DESCRIPTION
     This command will prompt you to enter the credentials for the database you with to track.
     All configuration options (DBMS, hostname, database, username and password) will be stored inside ./.dbtrack/config
+
+OPTIONS
+    <no params>
+        If no arguments are passed, you will be prompted for the database information.
+
+        EXAMPLE
+
+        dbt init
+
+    -dt, --datatype
+        Specify the database type you 'll be using.
+
+        EXAMPLE
+
+        dbt init --datatype MySQL
+
+    -db, --database
+        Specify the database's name.
+
+        EXAMPLE
+
+        dbt init --database wordpress_db
+
+    -h, --hostname
+        Specify the database server's hostname.
+
+        EXAMPLE
+
+        dbt init --hostname localhost
+
+    -u, --username
+        Specify the database login username.
+
+        EXAMPLE
+
+        dbt init --username root
+
+    -p, --password
+        Specify the database login password.
+
+        EXAMPLE
+
+        dbt init --password s3cr3tPa$$w0rd
+
+    -o, --overwrite
+        Don't prompt for re-initialisation if config file already exists.
+
+        EXAMPLE
+
+        dbt init --overwrite
+
+EXAMPLE
+    You can specify as many parameters as you want. If you skip some you'll be prompted for them.
+
+        dbt init -dt MySQL -db mydb -h 127.0.0.1 -u myuser -p mypass -o
+
+    The command above will create the config file and will overwrite the file if it exists.
+
+        dbt init -dt MySQL -db mydb -h 127.0.0.1 -u myuser -p mypass
+
+    If config already exists the above command will first prompt the user if they want to overwrite it.
+
+        dbt init -dt MySQL -db mydb -h 127.0.0.1
+
+    The command above will prompt the user for the database username/password as those options are missing.

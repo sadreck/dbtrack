@@ -54,6 +54,11 @@ class Config
             }
         }
 
+        // Create directory.
+        if (!$this->createDirectory(dirname($configFile))) {
+            return false;
+        }
+
         // Save new config.
         file_put_contents($configFile, json_encode($config));
         if (!file_exists($configFile)) {
@@ -115,10 +120,15 @@ class Config
     /**
      * Set the running state of dbtrack.
      * @param $isRunning
+     * @return bool
      * @throws \Exception
      */
     public function setRunning($isRunning)
     {
+        if (!$this->configTableExists()) {
+            return false;
+        }
+
         /** @var $dbms Database */
         $dbms = Container::getClassInstance('dbms');
 
@@ -147,6 +157,10 @@ class Config
      */
     public function isRunning()
     {
+        if (!$this->configTableExists()) {
+            return false;
+        }
+
         /** @var $dbms Database */
         $dbms = Container::getClassInstance('dbms');
 
@@ -155,5 +169,71 @@ class Config
                 WHERE name = 'running' AND value = 1";
         $row = $dbms->getRow($sql);
         return (false !== $row);
+    }
+
+    /**
+     * Check if dbtrack table exists.
+     * @return bool
+     * @throws \Exception
+     */
+    protected function configTableExists()
+    {
+        /** @var $dbms Database */
+        $dbms = Container::getClassInstance('dbms');
+        return ($dbms->tableExists('dbtrack_config'));
+    }
+
+    /**
+     * Delete config directory.
+     * @return bool
+     */
+    public function deleteConfigDirectory()
+    {
+        $this->deleteDirectory($this->dbtDirectory);
+
+        return !is_dir($this->dbtDirectory);
+    }
+
+    /**
+     * Delete directory.
+     * @param $directory
+     */
+    protected function deleteDirectory($directory)
+    {
+        $directory = rtrim($directory, '/');
+        if (is_dir($directory)) {
+            $list = scandir($directory);
+            foreach ($list as $item) {
+                if ('.' == $item || '..' == $item) {
+                    continue;
+                }
+                $path = $directory . '/' . $item;
+                if (is_dir($path)) {
+                    $this->deleteDirectory($path);
+                } else {
+                    unlink($path);
+                }
+            }
+            rmdir($directory);
+        }
+    }
+
+    /**
+     * Create directory.
+     * @param $directory
+     * @param int $permissions
+     * @return bool
+     */
+    protected function createDirectory($directory, $permissions = 0775)
+    {
+        if (is_dir($directory)) {
+            return true;
+        }
+
+        $umask = umask(0);
+        @mkdir($directory, $permissions, true);
+        umask($umask);
+
+        return is_dir($directory);
     }
 }

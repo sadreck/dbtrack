@@ -39,7 +39,14 @@ class Cleanup extends Command
             return false;
         }
 
-        $this->terminal->display('dbtrack has been removed from your database');
+        if ($this->removeConfig($this->arguments)) {
+            if (!$this->config->deleteConfigDirectory()) {
+                $this->terminal->display('Could not delete config directory.');
+                return false;
+            }
+        }
+
+        $this->terminal->display('dbtrack has been removed.');
         return true;
     }
 
@@ -52,5 +59,16 @@ class Cleanup extends Command
     {
         $confirm = $this->getArguments($arguments, 'yes', 'y');
         return (0 < count($confirm));
+    }
+
+    /**
+     * Check if we need to remove the dbtrack directory.
+     * @param array $arguments
+     * @return bool
+     */
+    protected function removeConfig(array $arguments)
+    {
+        $remove = $this->getArguments($arguments, 'remove-config', 'r');
+        return (0 < count($remove));
     }
 }

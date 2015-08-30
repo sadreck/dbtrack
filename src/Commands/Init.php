@@ -12,7 +12,9 @@ class Init extends Command
     public function execute()
     {
         // Check if it's already been initialised.
-        if ($this->config->isInitialised()) {
+        if ($this->config->isInitialised()
+            && !$this->canOverwrite($this->arguments)) {
+
             if (!$this->confirmReInitialise()) {
                 return false;
             }
@@ -68,13 +70,25 @@ class Init extends Command
             $this->terminal->display('No supported databases found.');
             return false;
         }
-
         $list = implode('/', $databases);
-        $datatype = $this->terminal->prompt('DBMS ('. $list .'): ');
-        $hostname = $this->terminal->prompt('Database hostname: ');
-        $database = $this->terminal->prompt('Database name: ');
-        $username = $this->terminal->prompt('Database username: ');
-        $password = $this->terminal->prompt('Database password: ');
+
+        $presets = $this->getPresetArguments($this->arguments);
+
+        $datatype = isset($presets['datatype'])
+            ? $presets['datatype']
+            : $this->terminal->prompt('DBMS ('. $list .'): ');
+        $hostname = isset($presets['hostname'])
+            ? $presets['hostname']
+            : $this->terminal->prompt('Database hostname: ');
+        $database = isset($presets['database'])
+            ? $presets['database']
+            : $this->terminal->prompt('Database name: ');
+        $username = isset($presets['username'])
+            ? $presets['username']
+            : $this->terminal->prompt('Database username: ');
+        $password = isset($presets['password'])
+            ? $presets['password']
+            : $this->terminal->prompt('Database password: ');
 
         if (empty($datatype) ||
             empty($hostname) ||
@@ -95,5 +109,42 @@ class Init extends Command
         );
 
         return (object)$data;
+    }
+
+    /**
+     * Get preset arguments.
+     * @param array $arguments
+     * @return array
+     */
+    protected function getPresetArguments(array $arguments)
+    {
+        $presets = array(
+            'datatype' => $this->getArguments($arguments, 'datatype', 'dt'),
+            'database' => $this->getArguments($arguments, 'database', 'db'),
+            'hostname' => $this->getArguments($arguments, 'hostname', 'h'),
+            'username' => $this->getArguments($arguments, 'username', 'u'),
+            'password' => $this->getArguments($arguments, 'password', 'p'),
+        );
+
+        foreach ($presets as $i => $preset) {
+            if (0 == count($preset)) {
+                unset($presets[$i]);
+            } elseif (1 == count($preset)) {
+                $presets[$i] = $preset[0];
+            }
+        }
+
+        return $presets;
+    }
+
+    /**
+     * Check if we can overwrite without prompting the user.
+     * @param array $arguments
+     * @return bool
+     */
+    protected function canOverwrite(array $arguments)
+    {
+        $overwrite = $this->getArguments($arguments, 'overwrite', 'o');
+        return (0 < count($overwrite));
     }
 }
