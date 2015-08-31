@@ -19,11 +19,11 @@ class ActionFormatting
      * @param array $actions
      * @return array
      */
-    public function formatList(array $actions)
+    public function formatList(array $actions, $maxLength)
     {
         $data = array();
         foreach ($actions as $action) {
-            $data[] = $this->formatRow($action);
+            $data[] = $this->formatRow($action, $maxLength);
         }
         return $data;
     }
@@ -33,14 +33,14 @@ class ActionFormatting
      * @param \stdClass $action
      * @return array
      */
-    public function formatRow(\stdClass $action)
+    public function formatRow(\stdClass $action, $maxLength)
     {
         $row = $action->newData;
         $changedColumns = array_flip(array_keys((array)$action->oldData));
 
         foreach ($row as $property => $value) {
-            if (strlen($value) >= 20) {
-                $value = substr($value, 0, 20) . '...';
+            if (0 < $maxLength && strlen($value) >= $maxLength) {
+                $value = substr($value, 0, $maxLength) . '...';
             }
 
             if (isset($changedColumns[$property])) {

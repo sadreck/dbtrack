@@ -37,6 +37,7 @@ class ActionParser
 
             $progressBar->current(++$i);
         }
+        $progressBar->current(count($actions));
 
         // Reversing because using array_unshift is too slow.
         return array_reverse($parsedActions);
@@ -318,5 +319,90 @@ class ActionParser
         }
 
         return $fullRows;
+    }
+
+    /**
+     * Filter by actions.
+     * @param array $allActions
+     * @param array $showActions Which actions to display.
+     * @param array $ignoreActions Which actions to ignore.
+     * @return array
+     */
+    public function filterByActions(
+        array $allActions,
+        array $showActions,
+        array $ignoreActions
+    ) {
+        // No need to run anything.
+        if (0 == count($showActions) && 0 == count($ignoreActions)) {
+            return $allActions;
+        }
+
+        // Flip so we can use isset() rather than in_array().
+        $showActions = array_flip($this->convertActionTypes($showActions));
+        $ignoreActions = array_flip($this->convertActionTypes($ignoreActions));
+
+        $filtered = array();
+        foreach ($allActions as $action) {
+            if (isset($showActions[$action->actionType])
+                && !isset($ignoreActions[$action->actionType])) {
+
+                $filtered[] = $action;
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * Convert action names to action types (from INSERT to 1 etc).
+     * @param array $actionList
+     * @return array
+     */
+    protected function convertActionTypes(array $actionList)
+    {
+        foreach ($actionList as $key => $value) {
+            if (!is_numeric($value)) {
+                $value = $this->dbms->getActionDescriptionFromText($value);
+                if (empty($value)) {
+                    unset($actionList[$key]);
+                } else {
+                    $actionList[$key] = $value;
+                }
+            }
+        }
+
+        return $actionList;
+    }
+
+    /**
+     * Filter actions by table name.
+     * @param array $allActions
+     * @param array $showTables
+     * @param array $ignoreTables
+     * @return array
+     */
+    public function filterByTables(
+        array $allActions,
+        array $showTables,
+        array $ignoreTables
+    ) {
+        // No need to run anything.
+        if (0 == count($showTables) && 0 == count($ignoreTables)) {
+            return $allActions;
+        }
+
+        $showTables = array_flip($showTables);
+        $ignoreTables = array_flip($ignoreTables);
+
+        $filtered = array();
+        foreach ($allActions as $action) {
+            $table = strtolower($action->tableName);
+            if (isset($showTables[$table]) && !isset($ignoreTables[$table])) {
+                $filtered[] = $action;
+            }
+        }
+
+        return $filtered;
     }
 }

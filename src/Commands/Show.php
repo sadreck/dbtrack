@@ -15,6 +15,8 @@ class Show extends Command
             return false;
         }
 
+        $arguments = $this->getPresetArguments($this->arguments);
+
         $actionsManager = new Actions();
         $actionFormatting = new ActionFormatting();
 
@@ -32,9 +34,101 @@ class Show extends Command
                 $this->climate->out('No actions found.');
                 return true;
             }
-            $formattedList = $actionFormatting->formatList($actionList);
-            $this->showTrackedData($formattedList);
+
+            // Get results per page.
+            $perPage = isset($arguments['perpage'])
+            && is_numeric($arguments['perpage'])
+                ? (int)$arguments['perpage']
+                : 10;
+
+            // Get max value length.
+            $maxLength = isset($arguments['maxlength'])
+            && is_numeric($arguments['maxlength'])
+                ? (int)$arguments['maxlength']
+                : 20;
+
+            $actionList = $this->filter($actionList, $arguments);
+
+            $formattedList = $actionFormatting->formatList(
+                $actionList,
+                $maxLength
+            );
+            $this->showTrackedData($formattedList, $perPage);
         }
+    }
+
+    /**
+     * Filter which records to show.
+     * @param array $parsedActions
+     * @param array $arguments
+     * @return array
+     */
+    protected function filter(array $parsedActions, array $arguments)
+    {
+        $actionManager = new Actions();
+
+        $showActions = isset($arguments['actions'])
+            ? $arguments['actions']
+            : array();
+        $ignoreActions = isset($arguments['ignore-actions'])
+            ? $arguments['ignore-actions']
+            : array();
+
+        $parsedActions = $actionManager->filterActions(
+            $parsedActions,
+            $showActions,
+            $ignoreActions
+        );
+
+        $showTables = isset($arguments['tables'])
+            ? $arguments['tables']
+            : array();
+        $ignoreTables = isset($arguments['ignore-tables'])
+            ? $arguments['ignore-tables']
+            : array();
+
+        $parsedActions = $actionManager->filterTables(
+            $parsedActions,
+            $showTables,
+            $ignoreTables
+        );
+
+        return $parsedActions;
+    }
+
+    /**
+     * Get preset arguments.
+     * @param array $arguments
+     * @return array
+     */
+    protected function getPresetArguments(array $arguments)
+    {
+        $presets = array(
+            'maxlength' => $this->getArguments($arguments, 'maxlength', 'm'),
+            'perpage' => $this->getArguments($arguments, 'per-page', 'p'),
+            'actions' => $this->getArguments($arguments, 'actions', 'a'),
+            'ignore-actions' => $this->getArguments(
+                $arguments,
+                'ignore-actions',
+                'ia'
+            ),
+            'tables' => $this->getArguments($arguments, 'tables', 't'),
+            'ignore-tables' => $this->getArguments(
+                $arguments,
+                'ignore-tables',
+                'it'
+            ),
+        );
+
+        foreach ($presets as $i => $preset) {
+            if (0 == count($preset)) {
+                unset($presets[$i]);
+            } elseif (1 == count($preset)) {
+                $presets[$i] = $preset[0];
+            }
+        }
+
+        return $presets;
     }
 
     /**
@@ -75,11 +169,21 @@ class Show extends Command
      * Display tracked data.
      * @param array $actions
      */
-    protected function showTrackedData(array $actions)
+    protected function showTrackedData(array $actions, $perPage)
     {
+        $rowCount = 0;
         foreach ($actions as $action) {
+            ++$rowCount;
+
             $this->climate->table(array($action));
             $this->climate->out('');
+
+            if (0 < $perPage && (0 == $rowCount % $perPage)) {
+                $this->climate->input(
+                    'Press enter to continue...' .
+                    '('. $rowCount .'/'. count($actions) .')'
+                )->prompt();
+            }
         }
     }
 }

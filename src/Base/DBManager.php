@@ -91,6 +91,7 @@ class DBManager
             }
             $progressBar->current(++$i);
         }
+        $progressBar->current(count($tables));
         return true;
     }
 
@@ -113,6 +114,7 @@ class DBManager
             $this->dbms->deleteTrigger($trigger);
             $progressBar->current(++$i);
         }
+        $progressBar->current(count($dbtrackTriggers));
 
         return true;
     }

@@ -68,4 +68,72 @@ class Actions
 
         return $fullParsedActions;
     }
+
+    /**
+     * Filter the parsed actions by action name/type.
+     * @param array $allActions
+     * @param $showActions
+     * @param $ignoreActions
+     * @return array
+     */
+    public function filterActions(
+        array $allActions,
+        $showActions,
+        $ignoreActions
+    ) {
+        $actionParser = new ActionParser();
+
+        $showActions = $this->convertParameterToArray($showActions);
+        $ignoreActions = $this->convertParameterToArray($ignoreActions);
+
+        $showActions = array_map('strtoupper', $showActions);
+        $ignoreActions = array_map('strtoupper', $ignoreActions);
+
+        $allActions = $actionParser->filterByActions(
+            $allActions,
+            $showActions,
+            $ignoreActions
+        );
+
+        return $allActions;
+    }
+
+    /**
+     * Filter the parsed actions by table name.
+     * @param array $allActions
+     * @param $showTables
+     * @param $ignoreTables
+     * @return array
+     */
+    public function filterTables(
+        array $allActions,
+        $showTables,
+        $ignoreTables
+    ) {
+        $actionParser = new ActionParser();
+
+        $showTables = $this->convertParameterToArray($showTables);
+        $ignoreTables = $this->convertParameterToArray($ignoreTables);
+
+        $showTables = array_map('strtolower', $showTables);
+        $ignoreTables = array_map('strtolower', $ignoreTables);
+
+        $allActions = $actionParser->filterByTables(
+            $allActions,
+            $showTables,
+            $ignoreTables
+        );
+
+        return $allActions;
+    }
+
+    /**
+     * Convert a single variable to an array.
+     * @param $value
+     * @return array
+     */
+    protected function convertParameterToArray($value)
+    {
+        return is_array($value) ? $value : array($value);
+    }
 }

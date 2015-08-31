@@ -30,6 +30,16 @@ abstract class Database
     );
 
     /**
+     * Set reverse action descriptions.
+     * @var array
+     */
+    protected $actionDescriptionsText = array(
+        'INSERT' => self::TRIGGER_ACTION_INSERT,
+        'UPDATE' => self::TRIGGER_ACTION_UPDATE,
+        'DELETE' => self::TRIGGER_ACTION_DELETE,
+    );
+
+    /**
      * If true the PDO connection must be stored in $this->connection.
      * @return bool
      */
@@ -211,6 +221,18 @@ abstract class Database
     {
         return isset($this->actionDescriptions[$actionType])
             ? $this->actionDescriptions[$actionType]
+            : '';
+    }
+
+    /**
+     * Return the action type from the action name.
+     * @param $actionName
+     * @return string
+     */
+    public function getActionDescriptionFromText($actionName)
+    {
+        return isset($this->actionDescriptionsText[$actionName])
+            ? $this->actionDescriptionsText[$actionName]
             : '';
     }
 }

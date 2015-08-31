@@ -2,9 +2,9 @@ NAME
     show   -   Show tracking results.
 
 SYNOPSIS
-    dbt show <group-id> [--maxlength | -m] <length> [--actions | -a] <actions> [--ignore-actions | -ia] <actions>
+    dbt show <group-id> [--maxlength | -m] <length> [--per-page | -p] <number>
+             [--actions | -a] <actions> [--ignore-actions | -ia] <actions>
              [--tables | -t] <tables> [--ignore-tables | -it] <tables>
-             [--per-page | -p] <number>
 
 DESCRIPTION
     This command will display the tracked results on screen.
