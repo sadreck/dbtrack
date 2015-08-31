@@ -235,4 +235,34 @@ abstract class Database
             ? $this->actionDescriptionsText[$actionName]
             : '';
     }
+
+    /**
+     * Begin database transaction.
+     */
+    public function beginTransaction()
+    {
+        if (!$this->connection->inTransaction()) {
+            $this->connection->beginTransaction();
+        }
+    }
+
+    /**
+     * Rollback database transaction.
+     */
+    public function rollbackTransaction()
+    {
+        if ($this->connection->inTransaction()) {
+            $this->connection->rollBack();
+        }
+    }
+
+    /**
+     * Commit database transaction.
+     */
+    public function commitTransaction()
+    {
+        if ($this->connection->inTransaction()) {
+            $this->connection->commit();
+        }
+    }
 }

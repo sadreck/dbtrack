@@ -52,18 +52,18 @@ class Actions
      * @param $grouId
      * @return array
      */
-    public function getActionsList($grouId)
+    public function getActionsList($groupId)
     {
-        if (!$this->groupExists($grouId)) {
+        if (!$this->groupExists($groupId)) {
             Events::triggerSimple(
                 'eventDisplayMessage',
-                'Group ID does not exist: ' . $grouId
+                'Group ID does not exist: ' . $groupId
             );
         }
 
         $actionParser = new ActionParser();
 
-        $parsedActions = $actionParser->parseGroup($grouId);
+        $parsedActions = $actionParser->parseGroup($groupId);
         $fullParsedActions = $actionParser->getFullRows($parsedActions);
 
         return $fullParsedActions;

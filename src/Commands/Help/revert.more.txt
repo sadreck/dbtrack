@@ -1,0 +1,21 @@
+NAME
+    revert   -   Revert database to a previous session state.
+
+SYNOPSIS
+    dbt revert <group-id>
+
+DESCRIPTION
+    This command will revert your database to a previous state.
+    All inserts, updates and deletes will be executed in reverse order.
+
+OPTIONS
+    <group-id>
+        Specify the group id to which you want to revert back to.
+        This is the first column of the <dbt show> results.
+
+        EXAMPLE
+
+        dbt revert 5
+
+        This means that ALL sessions AFTER this group id will be reverts.
+        If there are groups 1 to 10, this will revert 5, 6, 7, 8, 9 and 10.

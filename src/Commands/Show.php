@@ -2,7 +2,6 @@
 namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
-use DBtrack\Base\Database;
 use DBtrack\Core\ActionFormatting;
 use DBtrack\Core\Actions;
 
@@ -15,7 +14,24 @@ class Show extends Command
             return false;
         }
 
+        if ($this->config->isRunning()) {
+            $this->climate->out('dbtrack is still running.');
+            return false;
+        }
+
         $arguments = $this->getPresetArguments($this->arguments);
+
+        // Get results per page.
+        $perPage = isset($arguments['perpage'])
+        && is_numeric($arguments['perpage'])
+            ? (int)$arguments['perpage']
+            : 10;
+
+        // Get max value length.
+        $maxLength = isset($arguments['maxlength'])
+        && is_numeric($arguments['maxlength'])
+            ? (int)$arguments['maxlength']
+            : 20;
 
         $actionsManager = new Actions();
         $actionFormatting = new ActionFormatting();
@@ -35,18 +51,6 @@ class Show extends Command
                 return true;
             }
 
-            // Get results per page.
-            $perPage = isset($arguments['perpage'])
-            && is_numeric($arguments['perpage'])
-                ? (int)$arguments['perpage']
-                : 10;
-
-            // Get max value length.
-            $maxLength = isset($arguments['maxlength'])
-            && is_numeric($arguments['maxlength'])
-                ? (int)$arguments['maxlength']
-                : 20;
-
             $actionList = $this->filter($actionList, $arguments);
 
             $formattedList = $actionFormatting->formatList(
@@ -55,6 +59,8 @@ class Show extends Command
             );
             $this->showTrackedData($formattedList, $perPage);
         }
+
+        return true;
     }
 
     /**

@@ -34,6 +34,8 @@ class Help extends Command
 
         $climate->out('');
         $climate->out('For more options type: dbt help <command>');
+
+        return true;
     }
 
     /**
