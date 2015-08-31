@@ -5,6 +5,7 @@ SYNOPSIS
     dbt show <group-id> [--maxlength | -m] <length> [--per-page | -p] <number>
              [--actions | -a] <actions> [--ignore-actions | -ia] <actions>
              [--tables | -t] <tables> [--ignore-tables | -it] <tables>
+             [--export | -e] <path>
 
 DESCRIPTION
     This command will display the tracked results on screen.
@@ -92,3 +93,10 @@ OPTIONS
         dbt show --per-page 0
 
         This will remove the pagination limit.
+
+    -e, --export <path>
+        Export output to a CSV file. This command ignores -p and -m arguments.
+
+        EXAMPLE
+
+        dbt show 7 -e /tmp/session7.csv

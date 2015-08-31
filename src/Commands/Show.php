@@ -53,11 +53,24 @@ class Show extends Command
 
             $actionList = $this->filter($actionList, $arguments);
 
-            $formattedList = $actionFormatting->formatList(
-                $actionList,
-                $maxLength
-            );
-            $this->showTrackedData($formattedList, $perPage);
+            if (isset($arguments['export'])) {
+                if (!$actionsManager->export(
+                    $actionList,
+                    $arguments['export']
+                )) {
+                    $this->climate->out(
+                        'Could not export action to file: ' .
+                        $arguments['export']
+                    );
+                    return false;
+                }
+            } else {
+                $formattedList = $actionFormatting->formatList(
+                    $actionList,
+                    $maxLength
+                );
+                $this->showTrackedData($formattedList, $perPage);
+            }
         }
 
         return true;
@@ -124,6 +137,7 @@ class Show extends Command
                 'ignore-tables',
                 'it'
             ),
+            'export' => $this->getArguments($arguments, 'export', 'e')
         );
 
         foreach ($presets as $i => $preset) {

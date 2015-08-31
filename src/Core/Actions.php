@@ -4,6 +4,7 @@ namespace DBtrack\Core;
 use DBtrack\Base\Container;
 use DBtrack\Base\Database;
 use DBtrack\Base\Events;
+use League\Csv\Writer;
 
 class Actions
 {
@@ -49,7 +50,7 @@ class Actions
 
     /**
      * Return all parsed actions for the specified group id.
-     * @param $grouId
+     * @param $groupId
      * @return array
      */
     public function getActionsList($groupId)
@@ -135,5 +136,34 @@ class Actions
     protected function convertParameterToArray($value)
     {
         return is_array($value) ? $value : array($value);
+    }
+
+    /**
+     * Export actions to a CSV file.
+     * @param array $actions
+     * @param $outputFile
+     * @return bool
+     */
+    public function export(array $actions, $outputFile)
+    {
+        $csvWriter = Writer::createFromPath($outputFile, 'w');
+        foreach ($actions as $action) {
+            $row = (array)$action->newData;
+
+            // Add table & action type.
+            $row = array(
+                    $action->tableName => $this->dbms->getActionDescription(
+                        $action->actionType
+                    )
+                ) + $row;
+
+            $headers = array_keys($row);
+            $values = array_values($row);
+
+            $csvWriter->insertOne($headers);
+            $csvWriter->insertOne($values);
+            $csvWriter->insertOne(array());
+        }
+        return true;
     }
 }
