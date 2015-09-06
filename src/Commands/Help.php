@@ -4,6 +4,7 @@ namespace DBtrack\Commands;
 use DBtrack\Base\Command;
 use DBtrack\Base\Config;
 use DBtrack\Base\Container;
+use DBtrack\Base\System;
 use League\CLImate\CLImate;
 
 class Help extends Command
@@ -80,11 +81,11 @@ class Help extends Command
     {
         $helpFile = $path . '/' . $command . '.txt';
 
-        if (!file_exists($helpFile)) {
+        if (!$this->system->file_exists($helpFile)) {
             return false;
         }
 
-        return file_get_contents($helpFile);
+        return $this->system->file_get_contents($helpFile);
     }
 
     /**

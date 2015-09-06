@@ -32,6 +32,7 @@ class Events
 
         $event = new \stdClass();
         $event->function = $listener->function;
+        $event->enabled = true;
 
         if (!isset(self::$listeners[$listener->event])) {
             self::$listeners[$listener->event] = array();
@@ -56,16 +57,16 @@ class Events
         }
 
         foreach (self::$listeners[$event->event] as $listener) {
-            if (is_callable($listener->function)) {
+            if (is_callable($listener->function) && $listener->enabled) {
                 try {
                     call_user_func_array($listener->function, $event->params);
                 } catch (\Exception $e) {
                     throw new \Exception(
-                        'Error in function ' . $listener->function . ' while ' .
-                        'trying to trigger event: ' . $event->event,
-                        0,
+                        "Error in function {$listener->function} while trying" .
+                        " to trigger event: {$event->event}", // @codeCoverageIgnore
+                        0, // @codeCoverageIgnore
                         $e
-                    );
+                    ); // @codeCoverageIgnore
                 }
             }
         }
@@ -76,7 +77,7 @@ class Events
     /**
      * Simple wrapper around the trigger function.
      * @param $eventName
-     * @param array $params
+     * @param $params
      * @throws \Exception
      */
     public static function triggerSimple($eventName, $params)
@@ -91,5 +92,43 @@ class Events
         );
 
         self::trigger((object)$event);
+    }
+
+    /**
+     * Toggle triggers. Whether they will be enabled/disabled.
+     * @param $eventName
+     * @param $status
+     * @return bool
+     */
+    public static function toggleTriggers($eventName, $status)
+    {
+        if (!isset(self::$listeners[$eventName])) {
+            return false;
+        }
+
+        foreach (self::$listeners[$eventName] as $index => $event) {
+            self::$listeners[$eventName][$index]->enabled = $status;
+        }
+    }
+
+    /**
+     * Check if event listener is enabled.
+     * @param $eventName
+     * @return bool|null
+     */
+    public static function isEventListenerEnabled($eventName)
+    {
+        if (!isset(self::$listeners[$eventName])) {
+            return null;
+        }
+
+        $enabled = false;
+        foreach (self::$listeners[$eventName] as $event) {
+            if ($event->enabled) {
+                $enabled = true;
+                break;
+            }
+        }
+        return $enabled;
     }
 }

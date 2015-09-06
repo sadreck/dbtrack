@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit>
+    <php>
+        <var name="DB_DSN_MYSQL" value="mysql:dbname=dbtrack_phpunit;host=localhost" />
+        <var name="DB_HOSTNAME" value="localhost" />
+        <var name="DB_USERNAME" value="phpunit" />
+        <var name="DB_PASSWORD" value="phpunit" />
+        <var name="DB_DBNAME" value="dbtrack_phpunit" />
+    </php>
+</phpunit>

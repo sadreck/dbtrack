@@ -11,6 +11,10 @@ class MySQL extends Database
 
     public function connect()
     {
+        if (null === $this->connection) {
+            return true;
+        }
+
         $options = array(
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
         );

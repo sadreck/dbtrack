@@ -1,6 +1,8 @@
 <?php
 namespace DBtrack\Base;
 
+use DBtrack\System\System;
+
 class Config
 {
     /** DBtrack version */
@@ -9,19 +11,26 @@ class Config
     /** @var string The directory where all config information is be stored. */
     public $dbtDirectory = '';
 
+    /** @var System */
+    protected $system = null;
+
     /**
      * @param string $userDirectory Override $dbtDirectory.
      * @throws \Exception
      */
     public function __construct($userDirectory = '')
     {
+        $this->system = Container::getClassInstance('system');
+
         $this->dbtDirectory = empty($userDirectory)
-            ? getcwd() . '/.dbtrack'
+            ? $this->system->getcwd() . '/.dbtrack'
             : $userDirectory;
 
         // If the directory exists check if it's writable. If not, we don't care
         // as we 'll try and create it later on.
-        if (is_dir($this->dbtDirectory) && !is_writable($this->dbtDirectory)) {
+        if ($this->system->is_dir($this->dbtDirectory)
+            && !$this->system->is_writable($this->dbtDirectory)) {
+
             throw new \Exception(
                 'Permission denied to read/write to: ' . $this->dbtDirectory
             );
@@ -34,7 +43,7 @@ class Config
      */
     public function isInitialised()
     {
-        return file_exists($this->getConfigFile());
+        return $this->system->file_exists($this->getConfigFile());
     }
 
     /**
@@ -47,12 +56,11 @@ class Config
         $configFile = $this->getConfigFile();
 
         // Try to delete file if it exists.
-        if (file_exists($configFile)) {
-            @unlink($configFile);
-            if (file_exists($configFile)) {
+        if ($this->system->file_exists($configFile)) {
+            if (!$this->system->unlink($configFile)) {
                 return false;
             }
-        }
+        } // @codeCoverageIgnore
 
         // Create directory.
         if (!$this->createDirectory(dirname($configFile))) {
@@ -60,8 +68,8 @@ class Config
         }
 
         // Save new config.
-        file_put_contents($configFile, json_encode($config));
-        if (!file_exists($configFile)) {
+        $this->system->file_put_contents($configFile, json_encode($config));
+        if (!$this->system->file_exists($configFile)) {
             // Could not create config file.
             return false;
         }
@@ -79,13 +87,13 @@ class Config
             return false;
         }
 
-        $data = file_get_contents($this->getConfigFile());
+        $data = $this->system->file_get_contents($this->getConfigFile());
         if (empty($data)) {
             return false;
         }
 
         $config = json_decode($data);
-        if (false === $config) {
+        if (null === $config) {
             return false;
         } elseif (!$this->validateConfig($config)) {
             return false;
@@ -113,8 +121,7 @@ class Config
             $config->hostname,
             $config->database,
             $config->username,
-            $config->password
-        );
+            $config->password);
     }
 
     /**
@@ -191,31 +198,33 @@ class Config
     {
         $this->deleteDirectory($this->dbtDirectory);
 
-        return !is_dir($this->dbtDirectory);
+        return !$this->system->is_dir($this->dbtDirectory);
     }
 
     /**
      * Delete directory.
      * @param $directory
+     * @return bool
      */
     protected function deleteDirectory($directory)
     {
         $directory = rtrim($directory, '/');
-        if (is_dir($directory)) {
-            $list = scandir($directory);
+        if ($this->system->is_dir($directory)) {
+            $list = $this->system->scandir($directory);
             foreach ($list as $item) {
                 if ('.' == $item || '..' == $item) {
                     continue;
                 }
                 $path = $directory . '/' . $item;
-                if (is_dir($path)) {
+                if ($this->system->is_dir($path)) {
                     $this->deleteDirectory($path);
                 } else {
-                    unlink($path);
+                    $this->system->unlink($path);
                 }
             }
-            rmdir($directory);
+            $this->system->rmdir($directory);
         }
+        return true;
     }
 
     /**
@@ -226,14 +235,14 @@ class Config
      */
     protected function createDirectory($directory, $permissions = 0775)
     {
-        if (is_dir($directory)) {
+        if ($this->system->is_dir($directory)) {
             return true;
         }
 
-        $umask = umask(0);
-        @mkdir($directory, $permissions, true);
-        umask($umask);
+        $umask = $this->system->umask(0);
+        $this->system->mkdir($directory, $permissions, true);
+        $this->system->umask($umask);
 
-        return is_dir($directory);
+        return $this->system->is_dir($directory);
     }
 }

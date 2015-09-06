@@ -1,6 +1,7 @@
 <?php
 namespace DBtrack\Base;
 
+use DBtrack\System\System;
 use League\CLImate\CLImate;
 
 abstract class Command
@@ -20,6 +21,9 @@ abstract class Command
     /** @var Database */
     protected $dbms = null;
 
+    /** @var System */
+    protected $system = null;
+
     /**
      * Abstract function that executes the command line.
      */
@@ -36,6 +40,7 @@ abstract class Command
         $this->climate = Container::getClassInstance('climate');
         $this->dbManager = Container::getClassInstance('dbmanager');
         $this->config = Container::getClassInstance('config');
+        $this->system = Container::getClassInstance('system');
     }
 
     /**

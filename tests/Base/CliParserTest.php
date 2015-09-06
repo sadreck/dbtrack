@@ -57,6 +57,7 @@ class CliParserTest extends \PHPUnit_Framework_TestCase
         list($command, $arguments) = $parser->parseCommandLine(array());
 
         $this->assertEmpty($command);
-        $this->assertEquals(0, count($arguments));
+        $this->assertEquals(1, count($arguments));
+        $this->assertTrue(isset($arguments['raw-command']));
     }
 }

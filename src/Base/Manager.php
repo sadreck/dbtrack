@@ -5,6 +5,9 @@ use League\CLImate\CLImate;
 
 class Manager
 {
+    /** @var bool */
+    public $showHelpNoCommand = true;
+
     /**
      * @param bool|false $loadEvents Whether to load Global event listeners.
      */
@@ -24,6 +27,10 @@ class Manager
     public function run($command, array $arguments)
     {
         $command = $this->filterCommand($command);
+        if (empty($command)) {
+            return false;
+        }
+
         $className = "DBtrack\\Commands\\{$command}";
         if (!class_exists($className)) {
             Events::triggerSimple(
@@ -46,9 +53,10 @@ class Manager
      */
     protected function filterCommand($command)
     {
-        if (empty($command)) {
-            $command = 'help';
-        }
+        $command = empty($command) && $this->showHelpNoCommand
+            ? 'help'
+            : $command;
+
         return ucfirst(strtolower($command));
     }
 

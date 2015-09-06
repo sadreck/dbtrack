@@ -107,10 +107,6 @@ abstract class Database
         $this->config->database = $database;
         $this->config->username = $username;
         $this->config->password = $password;
-
-        if (empty($this->type)) {
-            throw new \Exception('Database type not set.');
-        }
     }
 
     /**
@@ -131,6 +127,15 @@ abstract class Database
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set database type.
+     * @param $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 
     /**
@@ -186,11 +191,13 @@ abstract class Database
      */
     public function loadSQLFile($fileName)
     {
-        if (!file_exists($fileName)) {
+        $system = Container::getClassInstance('system');
+
+        if (!$system->file_exists($fileName)) {
             return false;
         }
 
-        $sqlScript = trim(@file_get_contents($fileName));
+        $sqlScript = trim($system->file_get_contents($fileName));
         if (empty($sqlScript)) {
             return false;
         }
@@ -264,5 +271,14 @@ abstract class Database
         if ($this->connection->inTransaction()) {
             $this->connection->commit();
         }
+    }
+
+    /**
+     * If we already have a connection, use this method to set it.
+     * @param $connection
+     */
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
     }
 }

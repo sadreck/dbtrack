@@ -1,6 +1,7 @@
 <?php
 namespace DBtrack\Base;
 
+use DBtrack\System\System;
 use League\CLImate\CLImate;
 
 class Container
@@ -11,8 +12,12 @@ class Container
     /**
      * Initialise the container that will hold all the objects.
      */
-    public static function initContainer()
+    public static function initContainer($reInitialise = false)
     {
+        if (null !== self::$container && !$reInitialise) {
+            return true;
+        }
+
         self::$container = new \Pimple\Container();
 
         self::$container['config'] = function ($c) {
@@ -25,6 +30,10 @@ class Container
 
         self::$container['dbmanager'] = function ($c) {
             return new DBManager();
+        };
+
+        self::$container['system'] = function ($c) {
+            return new System();
         };
     }
 

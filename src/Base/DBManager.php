@@ -14,9 +14,11 @@ class DBManager
      */
     public function getSupportedDatabases()
     {
+        $system = Container::getClassInstance('system');
+
         $baseDir = dirname(dirname(__FILE__)) . '/Databases';
         $list = array();
-        $files = glob($baseDir . '/*.php');
+        $files = $system->glob($baseDir . '/*.php');
 
         foreach ($files as $file) {
             $list[] = pathinfo($file, PATHINFO_FILENAME);
@@ -51,12 +53,7 @@ class DBManager
             $password
         );
 
-        if (!$this->dbms->connect()) {
-            $this->dbms = null;
-            return false;
-        }
-
-        return $this->dbms;
+        return ($this->dbms->connect()) ? $this->dbms : false;
     }
 
     /**
@@ -117,5 +114,14 @@ class DBManager
         $progressBar->current(count($dbtrackTriggers));
 
         return true;
+    }
+
+    /**
+     * Set DBMS object if required.
+     * @param Database $dbms
+     */
+    public function setDBMS(Database $dbms)
+    {
+        $this->dbms = $dbms;
     }
 }

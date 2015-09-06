@@ -1,6 +1,7 @@
 {
   "require": {
     "phpunit/phpunit": "4.7.6",
+    "phpunit/dbunit": "1.4.1",
     "pimple/pimple": "3.0.1",
     "mockery/mockery": "0.9.4",
     "league/climate": "3.2.0",

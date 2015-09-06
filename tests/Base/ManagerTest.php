@@ -1,28 +1,28 @@
 <?php
 namespace DBtrack\Base;
 
-use Mockery\CountValidator\Exception;
-
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testRun()
     {
-        $manager = new Manager();
-        $result = $manager->run('command-does-not-exist', array());
-        $this->assertFalse($result);
+        $manager = new Manager(true);
 
         $mock = $this->getMock(
             'DBtrack\Base\Command',
             array(),
             array(),
-            'DummyClass',
+            'DummyCommandClass',
             false
         );
-        class_alias('DummyClass', 'DBtrack\Commands\Dummy');
+        class_alias('DummyCommandClass', 'DBtrack\Commands\Dummy');
         $mock->method('execute')->willReturn(true);
-        $manager->run('dummy', array());
+        $command = $manager->run('dummy', array());
+        $this->assertEquals('Dummy', $command);
 
-        $command = $manager->run('', array());
-        $this->assertEquals('Help', $command);
+        $manager->showHelpNoCommand = false;
+        $this->assertFalse($manager->run('', array()));
+
+        Events::toggleTriggers('eventDisplayMessage', false);
+        $this->assertFalse($manager->run('invalid-command', array()));
     }
 }
