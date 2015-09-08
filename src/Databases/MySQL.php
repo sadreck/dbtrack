@@ -11,7 +11,7 @@ class MySQL extends Database
 
     public function connect()
     {
-        if (null === $this->connection) {
+        if (null !== $this->connection) {
             return true;
         }
 

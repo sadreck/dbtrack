@@ -79,7 +79,11 @@ class DatabaseHelper
 
     public function deleteAllTables()
     {
-        foreach ($this->dbtrackTables as $table) {
+        $tables = $this->dbms->getTableList();
+        if (empty($tables)) {
+            $tables = array();
+        }
+        foreach ($tables as $table) {
             $this->deleteTable($table);
         }
     }
@@ -88,6 +92,14 @@ class DatabaseHelper
     {
         foreach ($this->dbtrackTables as $table) {
             $this->createTable($table);
+        }
+    }
+
+    public function deleteAllTriggers()
+    {
+        $triggers = $this->dbms->getTriggerList();
+        foreach ($triggers as $trigger) {
+            $this->dbms->deleteTrigger($trigger);
         }
     }
 }
