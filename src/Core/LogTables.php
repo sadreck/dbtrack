@@ -5,6 +5,7 @@ use DBtrack\Base\Config;
 use DBtrack\Base\Container;
 use DBtrack\Base\Database;
 use DBtrack\Base\Events;
+use Mockery\CountValidator\Exception;
 
 class LogTables
 {
@@ -48,7 +49,7 @@ class LogTables
 
         if (!$this->checkTableVersion(Config::VERSION)) {
             // TODO - Upgrade tables.
-            die('upgrade tables');
+            throw new Exception('TODO: Upgrade tables');
         }
 
         return true;
