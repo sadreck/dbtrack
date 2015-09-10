@@ -35,7 +35,7 @@ class ActionFormatting
      */
     public function formatRow(\stdClass $action, $maxLength)
     {
-        $row = $action->newData;
+        $row = clone $action->newData;
         $changedColumns = array_flip(array_keys((array)$action->oldData));
 
         foreach ($row as $property => $value) {
