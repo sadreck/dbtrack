@@ -88,10 +88,14 @@ class DatabaseHelper
         }
     }
 
-    public function createAllTables()
+    public function createAllTables($createTestTables = false)
     {
         foreach ($this->dbtrackTables as $table) {
             $this->createTable($table);
+        }
+
+        if ($createTestTables) {
+            $this->createTestTable();
         }
     }
 
@@ -101,5 +105,17 @@ class DatabaseHelper
         foreach ($triggers as $trigger) {
             $this->dbms->deleteTrigger($trigger);
         }
+    }
+
+    public function createTestTable()
+    {
+        $sql = "CREATE TABLE `atest` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `name` varchar(45) DEFAULT NULL,
+                  `subject` varchar(45) DEFAULT NULL,
+                  `timestamper` int(11) DEFAULT NULL,
+                  PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+        $this->dbms->executeQuery($sql);
     }
 }

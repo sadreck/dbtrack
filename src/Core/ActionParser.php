@@ -110,7 +110,8 @@ class ActionParser
                         return false;
                     }
 
-                    // Cleanup data (remove columns that may have been assigned in previous tracking data).
+                    // Cleanup data (remove columns that may have been assigned
+                    // in previous tracking data).
                     $data = $this->cleanRecord($trackedColumns, $data);
                 }
 
@@ -198,6 +199,9 @@ class ActionParser
          */
         if ($data == new \stdClass()) {
             $data = $this->queryPreviousRecord($tableName, $primaryKeys);
+            if (false === $data) {
+                $data = new \stdClass();
+            }
         }
 
         return $data;
@@ -339,14 +343,22 @@ class ActionParser
         }
 
         // Flip so we can use isset() rather than in_array().
-        $showActions = array_flip($this->convertActionTypes($showActions));
+        if (!empty($showActions)) {
+            $showActions = array_flip($this->convertActionTypes($showActions));
+        } else {
+            $showActions = array(
+                Database::TRIGGER_ACTION_INSERT => 1,
+                Database::TRIGGER_ACTION_UPDATE => 2,
+                Database::TRIGGER_ACTION_DELETE => 3
+            );
+        }
+
         $ignoreActions = array_flip($this->convertActionTypes($ignoreActions));
 
         $filtered = array();
         foreach ($allActions as $action) {
             if (isset($showActions[$action->actionType])
                 && !isset($ignoreActions[$action->actionType])) {
-
                 $filtered[] = $action;
             }
         }

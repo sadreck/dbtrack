@@ -60,6 +60,7 @@ class Actions
                 'eventDisplayMessage',
                 'Group ID does not exist: ' . $groupId
             );
+            return array();
         }
 
         $actionParser = new ActionParser();
