@@ -1,0 +1,23 @@
+NAME
+    config  -   Display or set config options.
+
+SYNOPSIS
+    dbt config [--all | -a]
+
+DESCRIPTION
+    This command will display the current config for the working directory.
+
+OPTIONS
+    <no params>
+        All config options will be displayed except the database password.
+
+        EXAMPLE
+
+        dbt config
+
+    -a, --all
+        Display all options including the database password.
+
+        EXAMPLE
+
+        dbt config --all
