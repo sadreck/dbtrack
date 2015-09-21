@@ -47,7 +47,7 @@ class Help extends Command
      */
     protected function getCommandsToDisplay($helpPath, array $arguments)
     {
-        $files = glob($helpPath . '/*.txt');
+        $files = $this->system->glob($helpPath . '/*.txt');
         $commands = array();
 
         $commandFile = '';
