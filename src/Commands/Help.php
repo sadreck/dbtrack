@@ -2,9 +2,7 @@
 namespace DBtrack\Commands;
 
 use DBtrack\Base\Command;
-use DBtrack\Base\Config;
 use DBtrack\Base\Container;
-use DBtrack\Base\System;
 use League\CLImate\CLImate;
 
 class Help extends Command
@@ -16,7 +14,7 @@ class Help extends Command
         /** @var $climate CLImate */
         $climate = Container::getClassInstance('climate');
         $climate->out(
-            'dbtrack v' . Config::VERSION . "\tPavel Tsakalidis [ p@vel.gr ]"
+            'dbtrack v' . \DBtrack\Base\Config::VERSION . "\tPavel Tsakalidis [ p@vel.gr ]"
         );
         $climate->out('');
 
